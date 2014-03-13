@@ -1,0 +1,46 @@
+{
+  "variables": {
+    "username": "ec2-user",
+    "kernel": "3.12.14",
+    "branch": "3.12",
+    "instance-size": "m1.small"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "us-east-1",
+      "source_ami": "ami-bba18dd2",
+      "instance_type": "{{user `instance-size`}}",
+      "ssh_username": "ec2-user",
+      "ssh_timeout": "1440m",
+      "ami_name": "packer-amazon-docker {{timestamp}}",
+      "ami_block_device_mappings": [
+          {
+              "device_name": "/dev/sda1",
+              "volume_size": 8,
+              "delete_on_termination": true
+          }
+      ],
+      "launch_block_device_mappings": [
+        {
+            "device_name": "/dev/sda1",
+            "volume_size": 8,
+            "delete_on_termination": true
+        },
+        {
+            "device_name": "/dev/sdb",
+            "virtual_name": "ephemeral0"
+        }
+      ]
+  } ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "sudo -S bash '{{ .Path }}'",
+      "scripts": [
+        "machine-update.sh",
+        "kernel-install.sh"
+      ]
+    }
+  ]
+}
