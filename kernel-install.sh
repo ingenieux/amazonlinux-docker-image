@@ -50,17 +50,15 @@ make olddefconfig
 make -j3 bzImage
 make -j3 modules
 make
-make modules_install
-make install
+make modules_install headers_install install INSTALL_HDR_PATH=/usr/include
 
 (cd .. ; 
  git clone git://git.code.sf.net/p/aufs/aufs-util ;
  cd aufs-util
  git checkout origin/aufs3.9 ;
- cd aufs-util ;
  make all install
-)
+) || true
 
-grubby --add-kernel=/boot/vmlinuz-$VERSION --make-default --title="Custom Docker Kernel" --initrd=/boot/initramfs-$VERSION.img --args="root=LABEL=/ console=hvc0"
+grubby --add-kernel=/boot/vmlinuz-$VERSION --make-default --title="Custom Docker Kernel" --initrd=/boot/initramfs-$VERSION.img --args="root=LABEL=/ console=hvc0" || true install
 
-return 0
+exit 0
